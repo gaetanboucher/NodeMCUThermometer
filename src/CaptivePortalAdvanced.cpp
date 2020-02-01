@@ -5,6 +5,7 @@
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
 #include <handleHttp.h>
+#include <credentials.h>
 #include <String.h>
 
 /*
@@ -58,7 +59,6 @@ unsigned int status = WL_IDLE_STATUS;
 
 void setupPortal() {
   delay(1000);
-  Serial.begin(9600);
   Serial.println();
   Serial.println("Configuring access point...");
   /* You can remove the password parameter if you want the AP to be open. */

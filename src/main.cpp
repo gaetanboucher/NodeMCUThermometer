@@ -28,19 +28,20 @@ void loop() {
   {
     average = totalSamples / samples;
   }
-  Serial.print("Pin1: "); 
-  Serial.print(pin1,DEC); 
-  Serial.print(", Temp="); 
+  // Serial.print("Pin1: "); 
+  // Serial.print(pin1,DEC); 
+  // Serial.print(", Temp="); 
   probe1 = getTemp(pin1);
-  Serial.print(probe1); 
-  Serial.print(", Pin2: "); 
-  Serial.print(pin2,DEC); 
-  Serial.print(", Temp="); 
+  // Serial.print(probe1); 
+  // Serial.print(", Pin2: "); 
+  // Serial.print(pin2,DEC); 
+  // Serial.print(", Temp="); 
   probe2 = getTemp(pin2);
-  Serial.print(probe2); 
-  Serial.println(); 
+  // Serial.print(probe2); 
+  // Serial.println(); 
   samples++;
   totalSamples += pin1;
+  loopPortal();
   delay(1000); 
 } 
 

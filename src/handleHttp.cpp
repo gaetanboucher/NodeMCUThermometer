@@ -1,7 +1,24 @@
 #include <Arduino.h>
 #include <String.h>
+#include <IPAddress.h>
+#include <ESP8266WebServer.h>
+#include <credentials.h>
+#include <tools.h>
 
 boolean captivePortal();
+
+// Web server
+extern ESP8266WebServer server;
+
+/* Soft AP network parameters */
+extern IPAddress apIP;
+extern IPAddress netMsk;
+extern const char *softAP_ssid;
+extern const char *softAP_password;
+extern char ssid[32];
+extern char password[32];
+extern const char *myHostname;
+extern boolean connect;
 
 /** Handle root or redirect to captive portal */
 void handleRoot() {

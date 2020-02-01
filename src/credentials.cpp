@@ -1,3 +1,10 @@
+#include "EEPROM.h"
+#include "String.h"
+#include "HardwareSerial.h"
+
+extern char ssid[32];
+extern char password[32];
+
 /** Load WLAN credentials from EEPROM */
 void loadCredentials() {
   EEPROM.begin(512);

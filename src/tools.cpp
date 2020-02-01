@@ -1,3 +1,10 @@
+#include <Arduino.h>
+#include <IPAddress.h>
+#include <String.h>
+
+extern char ssid[32];
+extern char password[32];
+
 /** Is this an IP? */
 boolean isIp(String str) {
   for (size_t i = 0; i < str.length(); i++) {
