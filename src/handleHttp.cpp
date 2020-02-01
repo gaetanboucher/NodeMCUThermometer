@@ -32,14 +32,14 @@ void handleRoot() {
   String Page;
   Page += F(
             "<html><head></head><body>"
-            "<h1>HELLO WORLD!!</h1>");
+            "<h1 style='font-size:30px;font-family:Arial;'><b>Wifi Thermometer</b></h1>");
   if (server.client().localIP() == apIP) {
-    Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
+    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
   } else {
-    Page += String(F("<p>You are connected through the wifi network: ")) + ssid + F("</p>");
+    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the wifi network: ")) + ssid + F("</p>");
   }
   Page += F(
-            "<p>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
+            "<p style='font-size:20px;font-family:Arial;'>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
             "</body></html>");
 
   server.send(200, "text/html", Page);
@@ -66,51 +66,51 @@ void handleWifi() {
   String Page;
   Page += F(
             "<html><head></head><body>"
-            "<h1>Wifi config</h1>");
+            "<h1 style='font-size:30px;font-family:Arial;'><b>Wifi Thermometer Setup</b></h1>");
   if (server.client().localIP() == apIP) {
-    Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
+    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
   } else {
-    Page += String(F("<p>You are connected through the wifi network: ")) + ssid + F("</p>");
+    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the wifi network: ")) + ssid + F("</p>");
   }
   Page +=
     String(F(
              "\r\n<br />"
-             "<table><tr><th align='left'>SoftAP config</th></tr>"
+             "<table><tr><th  style='font-size:20px;font-family:Arial;' align='left'>SoftAP config</th></tr>"
              "<tr><td>SSID ")) +
     String(softAP_ssid) +
     F("</td></tr>"
-      "<tr><td>IP ") +
+      "<tr><td style='font-size:20px;font-family:Arial;'>IP ") +
     toStringIp(WiFi.softAPIP()) +
     F("</td></tr>"
       "</table>"
       "\r\n<br />"
-      "<table><tr><th align='left'>WLAN config</th></tr>"
-      "<tr><td>SSID ") +
+      "<table><tr><th style='font-size:20px;font-family:Arial;' align='left'>WLAN config</th></tr>"
+      "<tr><td style='font-size:20px;font-family:Arial;'>SSID ") +
     String(ssid) +
     F("</td></tr>"
-      "<tr><td>IP ") +
+      "<tr><td style='font-size:20px;font-family:Arial;'>IP ") +
     toStringIp(WiFi.localIP()) +
     F("</td></tr>"
       "</table>"
       "\r\n<br />"
-      "<table><tr><th align='left'>WLAN list (refresh if any missing)</th></tr>");
+      "<table><tr><th style='font-size:20px;font-family:Arial;' align='left'>WLAN list (refresh if any missing)</th></tr>");
   Serial.println("scan start");
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
   if (n > 0) {
     for (int i = 0; i < n; i++) {
-      Page += String(F("\r\n<tr><td>SSID ")) + WiFi.SSID(i) + ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? F(" ") : F(" *")) + F(" (") + WiFi.RSSI(i) + F(")</td></tr>");
+      Page += String(F("\r\n<tr><td style='font-size:20px;font-family:Arial;'>SSID ")) + WiFi.SSID(i) + ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? F(" ") : F(" *")) + F(" (") + WiFi.RSSI(i) + F(")</td></tr>");
     }
   } else {
-    Page += F("<tr><td>No WLAN found</td></tr>");
+    Page += F("<tr><td style='font-size:20px;font-family:Arial;'>No WLAN found</td></tr>");
   }
   Page += F(
             "</table>"
             "\r\n<br /><form method='POST' action='wifisave'><h4>Connect to network:</h4>"
-            "<input type='text' placeholder='network' name='n'/>"
-            "<br /><input type='password' placeholder='password' name='p'/>"
-            "<br /><input type='submit' value='Connect/Disconnect'/></form>"
-            "<p>You may want to <a href='/'>return to the home page</a>.</p>"
+            "<input style='font-size:20px;font-family:Arial;' type='text' placeholder='network' name='n'/>"
+            "<br /><input style='font-size:20px;font-family:Arial;' type='password' placeholder='password' name='p'/>"
+            "<br /><input style='font-size:20px;font-family:Arial;' type='submit' value='Connect/Disconnect'/></form>"
+            "<p style='font-size:20px;font-family:Arial;'>You may want to <a href='/'>return to the home page</a>.</p>"
             "</body></html>");
   server.send(200, "text/html", Page);
   server.client().stop(); // Stop is needed because we sent no content length
