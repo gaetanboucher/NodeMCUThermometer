@@ -1,0 +1,2 @@
+void setupPortal();
+void loopPortal();

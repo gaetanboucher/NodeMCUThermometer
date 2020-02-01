@@ -1,0 +1,2 @@
+void loadCredentials();
+void saveCredentials();

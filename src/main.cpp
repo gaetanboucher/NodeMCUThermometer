@@ -3,35 +3,17 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
+#include <CaptivePortalAdvanced.h>
 //#include <Thermometer.h>
 
-/* Set these to your desired credentials. */
-const char *ssid = "MonNodeMCU";
-const char *password = "1234";
-
-ESP8266WebServer server(80);
 float probe1=0, probe2=0;
-
-/* Just a little test message.  Go to http://192.168.4.1 in a web browser
- * connected to this access point to see it.
- */
-void handleRoot() {
-   server.send(200, "text/html", 
-    "<HEAD><TITLE>WIFI Thermometer</TITLE><META HTTP-EQUIV='refresh' CONTENT='5'></HEAD><h1 style='font-family:verdana;font-size:50px;text-align:center;color:blue;'>Probe 1: " + String(probe1) + "&#8451;</h1><h1 style='font-family:verdana;font-size:50px;text-align:center;color:red;'>Probe 2: " + String(probe2)+ "&#8451;</h1>");
-}
 
 Mcp3208 adc;
 float getTemp(int Vo);
 
 void setup(){ 
   Serial.begin(115200); 
-  WiFi.softAP(ssid);
-
-  IPAddress myIP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(myIP);
-  server.on("/", handleRoot);
-  server.begin();
+  setupPortal();
 } 
 
 int totalSamples = 0;
@@ -39,7 +21,6 @@ int samples = 0;
 
 void loop() { 
   int pin1, pin2;
-  server.handleClient();
   int average = 0;
   pin1 = adc.read(1);
   pin2 = adc.read(2);
