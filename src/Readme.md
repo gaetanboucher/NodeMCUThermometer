@@ -1,7 +1,7 @@
 This is a work in progress to create a wireless 2 probe thermometer based on:
 - NodeMCU
 - MCP3208 (Has 8 channels but I only need to read 2 probes)
-- Macerick ET-732 Probes 
+- Maverick ET-732 Probes 
 
 So far, I managed to read the probe temperature using two channels of the mcp3208 to about 2 degree of what they should be so some additional calibration will be required to get Steinhart-Hart coefficients right, but it's pretty close.
 
