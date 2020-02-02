@@ -22,7 +22,7 @@
 
 /* Set these to your desired softAP credentials. They are not configurable at runtime */
 #ifndef APSSID
-#define APSSID "ESP_ap"
+#define APSSID "WiFiThermometer"
 #define APPSK  "12345678"
 #endif
 
