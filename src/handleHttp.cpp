@@ -36,8 +36,8 @@ void handleRoot() {
   Page += getPageHeader();
   Page += F("<div>");
   Page += String(F("<br/><br/><br/>"));
-  Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("</p>");
-  Page += String(F("<p>Probe 2: "))+getProbeTemp(2)+F("</p>");
+  Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("&deg;C</p>");
+  Page += String(F("<p>Probe 2: "))+getProbeTemp(2)+F("&deg;C</p>");
 
   Page += F("</div></body></html>");
 
@@ -69,14 +69,14 @@ F(\
           font-family:Arial;\
         }\
         th {\
-          color: #ff6347;\
+          color: silver;\
           margin-left: 40px;\
           margin-right: 40px;\
           font-size:30px;\
           font-family:Arial;\
         }\
         td,input {\
-          color: #lemonchiffon;\
+          color: lemonchiffon;\
           margin-left: 40px;\
           margin-right: 40px;\
           font-size:30px;\
