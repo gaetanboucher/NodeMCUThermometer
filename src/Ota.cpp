@@ -13,7 +13,6 @@ const char* ssid = STASSID;
 const char* password = STAPSK;
 
 void Ota::setup() {
-    Serial.begin(115200);
     Serial.println("Booting");
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
@@ -73,6 +72,6 @@ void Ota::setup() {
     Serial.println(WiFi.localIP());
 }
 
-void loop() {
+void Ota::loop() {
     ArduinoOTA.handle();
 }
