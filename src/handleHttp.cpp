@@ -34,17 +34,12 @@ void handleRoot() {
 
   String Page;
   Page += getPageHeader();
-  if (server.client().localIP() == apIP) {
-    Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
-  } else {
-    Page += String(F("<p>You are connected through the wifi network: ")) + ssid + F("</p>");
-  }
-  Page += String(F("<p>Probe 1: </p><p \"font-family: 'Orbitron', sans-serif;\">"))+getProbeTemp(1)+F("</p>");
-  Page += String(F("<p>Probe 2: </p><p \"font-family: 'Orbitron', sans-serif;\">"))+getProbeTemp(2)+F("</p>");
+  Page += F("<div>");
+  Page += String(F("<br/><br/><br/>"));
+  Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("</p>");
+  Page += String(F("<p>Probe 2: "))+getProbeTemp(2)+F("</p>");
 
-  Page += F(
-            "<p>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
-            "</body></html>");
+  Page += F("</div></body></html>");
 
   server.send(200, "text/html", Page);
 }
@@ -55,12 +50,11 @@ String getPageHeader()
 F(\
   "<html>\
     <head>\
-    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>\
       <style>\
         body {\
           background-color: #141414;\
         }\
-        h1 {\
+        h1, h2, h3 , h4 {\
           color: lemonchiffon;\
           margin-left: 40px;\
           margin-right: 40px;\
@@ -74,8 +68,15 @@ F(\
           font-size:30px;\
           font-family:Arial;\
         }\
-        th,td {\
-          color: lemonchiffon;\
+        th {\
+          color: #ff6347;\
+          margin-left: 40px;\
+          margin-right: 40px;\
+          font-size:30px;\
+          font-family:Arial;\
+        }\
+        td,input {\
+          color: #lemonchiffon;\
           margin-left: 40px;\
           margin-right: 40px;\
           font-size:30px;\
@@ -98,9 +99,10 @@ F(\
           <a href='/setup'>Setup</a>\
           <a href='/wifi'>Wifi</a>\
           <a href='/help'>Help!</a>\
-      </div>\
+      </div><br/>\
     </head>\
     <body>\
+    <br/><br/><br/>\
     ");
   return header;
 }
@@ -125,13 +127,10 @@ void handleWifi() {
 
   String Page;
   Page += getPageHeader();
-  Page += F(
-            "<html><head></head><body>"
-            "<h1><b>Wifi Thermometer Setup</b></h1>");
   if (server.client().localIP() == apIP) {
-    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
+    Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
   } else {
-    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the wifi network: ")) + ssid + F("</p>");
+    Page += String(F("<p>You are connected through the wifi network: ")) + ssid + F("</p>");
   }
   Page +=
     String(F(
@@ -145,33 +144,32 @@ void handleWifi() {
     F("</td></tr>"
       "</table>"
       "\r\n<br />"
-      "<table><tr><th style='font-size:20px;font-family:Arial;' align='left'>WLAN config</th></tr>"
-      "<tr><td style='font-size:20px;font-family:Arial;'>SSID ") +
+      "<table><tr><th align='left'>WLAN config</th></tr>"
+      "<tr><td>SSID ") +
     String(ssid) +
     F("</td></tr>"
-      "<tr><td style='font-size:20px;font-family:Arial;'>IP ") +
+      "<tr><td>IP ") +
     toStringIp(WiFi.localIP()) +
     F("</td></tr>"
       "</table>"
       "\r\n<br />"
-      "<table><tr><th style='font-size:20px;font-family:Arial;' align='left'>WLAN list (refresh if any missing)</th></tr>");
+      "<table><tr><th align='left'>WLAN list (refresh if any missing)</th></tr>");
   Serial.println("scan start");
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
   if (n > 0) {
     for (int i = 0; i < n; i++) {
-      Page += String(F("\r\n<tr><td style='font-size:20px;font-family:Arial;'>SSID ")) + WiFi.SSID(i) + ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? F(" ") : F(" *")) + F(" (") + WiFi.RSSI(i) + F(")</td></tr>");
+      Page += String(F("\r\n<tr><td>SSID ")) + WiFi.SSID(i) + ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? F(" ") : F(" *")) + F(" (") + WiFi.RSSI(i) + F(")</td></tr>");
     }
   } else {
-    Page += F("<tr><td style='font-size:20px;font-family:Arial;'>No WLAN found</td></tr>");
+    Page += F("<tr><td'>No WLAN found</td></tr>");
   }
   Page += F(
             "</table>"
             "\r\n<br /><form method='POST' action='wifisave'><h4>Connect to network:</h4>"
-            "<input style='font-size:20px;font-family:Arial;' type='text' placeholder='network' name='n'/>"
-            "<br /><input style='font-size:20px;font-family:Arial;' type='password' placeholder='password' name='p'/>"
-            "<br /><input style='font-size:20px;font-family:Arial;' type='submit' value='Connect/Disconnect'/></form>"
-            "<p style='font-size:20px;font-family:Arial;'>You may want to <a href='/'>return to the home page</a>.</p>"
+            "<input type='text' placeholder='network' name='n'/>"
+            "<br /><input type='password' placeholder='password' name='p'/>"
+            "<br /><input type='submit' value='Connect/Disconnect'/></form>"
             "</body></html>");
   server.send(200, "text/html", Page);
   server.client().stop(); // Stop is needed because we sent no content length
@@ -195,7 +193,7 @@ void handleHelp() {
 
   String Page;
   Page += getPageHeader();
-  Page += String(F("<h1><b>Setup page coming soon...</b></h1>"));
+  Page += String(F("<h1><b>Help page coming soon...</b></h1>"));
   server.send(200, "text/html", Page);
 }
 
