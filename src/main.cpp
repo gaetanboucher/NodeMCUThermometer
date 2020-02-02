@@ -9,6 +9,7 @@
 float probe1=0, probe2=0;
 
 Mcp3208 adc;
+float getProbeTemp(int probeId);
 float getTemp(int Vo);
 
 void setup(){ 
@@ -21,17 +22,12 @@ int samples = 0;
 
 void loop() { 
   int pin1, pin2;
-  int average = 0;
   pin1 = adc.read(1);
   pin2 = adc.read(2);
-  if (samples > 1) 
-  {
-    average = totalSamples / samples;
-  }
   // Serial.print("Pin1: "); 
   // Serial.print(pin1,DEC); 
   // Serial.print(", Temp="); 
-  probe1 = getTemp(pin1);
+  probe1 = getProbeTemp(pin1);
   // Serial.print(probe1); 
   // Serial.print(", Pin2: "); 
   // Serial.print(pin2,DEC); 
@@ -42,7 +38,14 @@ void loop() {
   samples++;
   totalSamples += pin1;
   loopPortal();
-  delay(1000); 
+} 
+
+float getProbeTemp(int probeId) { 
+  float probe=0;
+  int pin = probeId;
+  int average = 0;
+  pin = adc.read(probeId);
+  probe = getTemp(pin);
 } 
 
 float Vin= 3.3;

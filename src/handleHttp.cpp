@@ -19,6 +19,7 @@ extern char ssid[32];
 extern char password[32];
 extern const char *myHostname;
 extern boolean connect;
+extern float getProbeTemp(int prodeId);
 
 /** Handle root or redirect to captive portal */
 void handleRoot() {
@@ -38,6 +39,9 @@ void handleRoot() {
   } else {
     Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the wifi network: ")) + ssid + F("</p>");
   }
+  Page += String(F("<p style='font-size:20px;font-family:Arial;'>Probe 1: "))+getProbeTemp(1)+F("</p>");
+  Page += String(F("<p style='font-size:20px;font-family:Arial;'>Probe 2: "))+getProbeTemp(2)+F("</p>");
+
   Page += F(
             "<p style='font-size:20px;font-family:Arial;'>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
             "</body></html>");
