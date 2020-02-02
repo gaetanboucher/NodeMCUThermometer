@@ -41,11 +41,11 @@ void loop() {
 } 
 
 float getProbeTemp(int probeId) { 
-  float probe=0;
+  float probe;
   int pin = probeId;
-  int average = 0;
   pin = adc.read(probeId);
   probe = getTemp(pin);
+  return probe;
 } 
 
 float Vin= 3.3;

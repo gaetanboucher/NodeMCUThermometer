@@ -74,7 +74,10 @@ void setupPortal() {
 
   /* Setup web pages: root, wifi config pages, SO captive portal detectors and not found. */
   server.on("/", handleRoot);
+  server.on("/home", handleRoot);
   server.on("/wifi", handleWifi);
+  server.on("/setup", handleSetup);
+  server.on("/help", handleHelp);
   server.on("/wifisave", handleWifiSave);
   server.on("/generate_204", handleRoot);  //Android captive portal. Maybe not needed. Might be handled by notFound handler.
   server.on("/fwlink", handleRoot);  //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.

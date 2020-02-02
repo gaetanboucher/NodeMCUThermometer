@@ -21,6 +21,8 @@ extern const char *myHostname;
 extern boolean connect;
 extern float getProbeTemp(int prodeId);
 
+String getPageHeader();
+
 /** Handle root or redirect to captive portal */
 void handleRoot() {
   if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
@@ -31,22 +33,76 @@ void handleRoot() {
   server.sendHeader("Expires", "-1");
 
   String Page;
-  Page += F(
-            "<html><head></head><body>"
-            "<h1 style='font-size:30px;font-family:Arial;'><b>Wifi Thermometer</b></h1>");
+  Page += getPageHeader();
   if (server.client().localIP() == apIP) {
-    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
+    Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
   } else {
-    Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the wifi network: ")) + ssid + F("</p>");
+    Page += String(F("<p>You are connected through the wifi network: ")) + ssid + F("</p>");
   }
-  Page += String(F("<p style='font-size:20px;font-family:Arial;'>Probe 1: "))+getProbeTemp(1)+F("</p>");
-  Page += String(F("<p style='font-size:20px;font-family:Arial;'>Probe 2: "))+getProbeTemp(2)+F("</p>");
+  Page += String(F("<p>Probe 1: </p><p \"font-family: 'Orbitron', sans-serif;\">"))+getProbeTemp(1)+F("</p>");
+  Page += String(F("<p>Probe 2: </p><p \"font-family: 'Orbitron', sans-serif;\">"))+getProbeTemp(2)+F("</p>");
 
   Page += F(
-            "<p style='font-size:20px;font-family:Arial;'>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
+            "<p>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
             "</body></html>");
 
   server.send(200, "text/html", Page);
+}
+
+String getPageHeader()
+{
+  String header=
+F(\
+  "<html>\
+    <head>\
+    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>\
+      <style>\
+        body {\
+          background-color: #141414;\
+        }\
+        h1 {\
+          color: lemonchiffon;\
+          margin-left: 40px;\
+          margin-right: 40px;\
+          font-size:50px;\
+          font-family:Arial;\
+        }\
+        p {\
+          color: lemonchiffon;\
+          margin-left: 40px;\
+          margin-right: 40px;\
+          font-size:30px;\
+          font-family:Arial;\
+        }\
+        th,td {\
+          color: lemonchiffon;\
+          margin-left: 40px;\
+          margin-right: 40px;\
+          font-size:30px;\
+          font-family:Arial;\
+        }\
+        a {\
+          font-size:30px;\
+          font-family:Arial;\
+        }\
+        #h_nav_bar div { height: 200px; width: 100%; }\
+        #h_nav_bar a { padding:15px; font-weight:bold; float:left; }\
+        #h_nav_bar a:link { color:#d0d0d0; background-color:#0000a0; }\
+        #h_nav_bar a:visited { color:#c0c0c0; background-color:#0000a0; }\
+        #h_nav_bar a:hover { color:#ffffff; background-color:#000060; }\
+        #h_nav_bar a:active { color:#f0f0f0; background-color:#00ff00; }\
+      </style>\
+      <h1><b>Wifi Thermometer</b></h1><br/>\
+      <div id='h_nav_bar'>\
+          <a href='/home'>Home</a>\
+          <a href='/setup'>Setup</a>\
+          <a href='/wifi'>Wifi</a>\
+          <a href='/help'>Help!</a>\
+      </div>\
+    </head>\
+    <body>\
+    ");
+  return header;
 }
 
 /** Redirect to captive portal if we got a request for another domain. Return true in that case so the page handler do not try to handle the request again. */
@@ -68,9 +124,10 @@ void handleWifi() {
   server.sendHeader("Expires", "-1");
 
   String Page;
+  Page += getPageHeader();
   Page += F(
             "<html><head></head><body>"
-            "<h1 style='font-size:30px;font-family:Arial;'><b>Wifi Thermometer Setup</b></h1>");
+            "<h1><b>Wifi Thermometer Setup</b></h1>");
   if (server.client().localIP() == apIP) {
     Page += String(F("<p style='font-size:20px;font-family:Arial;'>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
   } else {
@@ -79,11 +136,11 @@ void handleWifi() {
   Page +=
     String(F(
              "\r\n<br />"
-             "<table><tr><th  style='font-size:20px;font-family:Arial;' align='left'>SoftAP config</th></tr>"
+             "<table><tr><th align='left'>SoftAP config</th></tr>"
              "<tr><td>SSID ")) +
     String(softAP_ssid) +
     F("</td></tr>"
-      "<tr><td style='font-size:20px;font-family:Arial;'>IP ") +
+      "<tr><td>IP ") +
     toStringIp(WiFi.softAPIP()) +
     F("</td></tr>"
       "</table>"
@@ -118,6 +175,28 @@ void handleWifi() {
             "</body></html>");
   server.send(200, "text/html", Page);
   server.client().stop(); // Stop is needed because we sent no content length
+}
+
+void handleSetup() {
+  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+
+  String Page;
+  Page += getPageHeader();
+  Page += String(F("<h1><b>Setup page coming soon...</b></h1>"));
+  server.send(200, "text/html", Page);
+}
+
+void handleHelp() {
+  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+
+  String Page;
+  Page += getPageHeader();
+  Page += String(F("<h1><b>Setup page coming soon...</b></h1>"));
+  server.send(200, "text/html", Page);
 }
 
 /** Handle the WLAN save form and redirect to WLAN config page again */

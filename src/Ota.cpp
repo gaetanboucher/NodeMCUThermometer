@@ -9,8 +9,8 @@
 #define STAPSK  "15b4915b49"
 #endif
 
-const char* ssid = STASSID;
-const char* password = STAPSK;
+extern const char* ssid;
+extern const char* password;
 
 void Ota::setup() {
     Serial.println("Booting");
