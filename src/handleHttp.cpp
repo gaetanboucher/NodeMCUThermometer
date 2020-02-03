@@ -22,6 +22,7 @@ extern boolean connect;
 extern float getProbeTemp(int prodeId);
 
 String getPageHeader();
+String getStyleSheet();
 
 /** Handle root or redirect to captive portal */
 void handleRoot() {
@@ -33,24 +34,67 @@ void handleRoot() {
   server.sendHeader("Expires", "-1");
 
   String Page;
+  Page += F("<html>");
+  Page += getStyleSheet();
+  Page += F("<div class='grid-container'>");
   Page += getPageHeader();
-  Page += F("<div>");
-  Page += String(F("<br/><br/><br/>"));
+  Page += F("<body>");
+  Page += F("<div class='Main'>");
+  Page += String(F("<div class='Probe1'>"));
   Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("&deg;C</p>");
+  Page += String(F("</div>"));
+  Page += String(F("<div class='Probe2'>"));
   Page += String(F("<p>Probe 2: "))+getProbeTemp(2)+F("&deg;C</p>");
+  Page += String(F("</div>"));
+  Page += String(F("</div>"));
+  Page += F("<div class='Foot'>");
+  Page += String(F("</div>"));
 
-  Page += F("</div></body></html>");
+  Page += String(F("</div>"));
+  Page += F("</body>");
+  Page += F("</html>");
 
   server.send(200, "text/html", Page);
 }
 
-String getPageHeader()
+String getStyleSheet()
 {
   String header=
 F(\
-  "<html>\
-    <head>\
-      <style>\
+  "<style>\
+      .grid-container {\
+        display: grid;\
+        grid-template-columns: 1fr;\
+        grid-template-rows: 0.5fr 2.1fr 0.4fr;\
+        grid-template-areas: 'Head' 'Main' 'Foot';\
+      }\
+\
+      .Main {\
+        display: grid;\
+        grid-template-columns: 1fr;\
+        grid-template-rows: 1fr 1fr;\
+        grid-template-areas: 'Probe1' 'Probe2';\
+        grid-area: Main;\
+      }\
+\
+      .Probe2 { grid-area: Probe2; }\
+\
+      .Probe1 { grid-area: Probe1; }\
+\
+      .Head {\
+        display: grid;\
+        grid-template-columns: 0.1fr 1.9fr;\
+        grid-template-rows: 1fr;\
+        grid-template-areas: 'Menu Title';\
+        grid-area: Head;\
+      }\
+\
+      .Title { grid-area: Title; }\
+\
+      .Menu { grid-area: Menu; }\
+\
+      .Foot { grid-area: Foot; }\
+\
         body {\
           background-color: #141414;\
         }\
@@ -86,23 +130,113 @@ F(\
           font-size:30px;\
           font-family:Arial;\
         }\
-        #h_nav_bar div { height: 200px; width: 100%; }\
-        #h_nav_bar a { padding:15px; font-weight:bold; float:left; }\
-        #h_nav_bar a:link { color:#d0d0d0; background-color:#0000a0; }\
-        #h_nav_bar a:visited { color:#c0c0c0; background-color:#0000a0; }\
-        #h_nav_bar a:hover { color:#ffffff; background-color:#000060; }\
-        #h_nav_bar a:active { color:#f0f0f0; background-color:#00ff00; }\
+        ul {\
+          list-style-type: none;\
+          margin: 0;\
+          padding: 0;\
+          overflow: hidden;\
+          background-color: red;\
+        }\
+        \
+        li {\
+          float: left;\
+        }\
+        \
+        li a, .dropbtn {\
+          display: inline-block;\
+          color: white;\
+          text-align: center;\
+          padding: 14px 16px;\
+          text-decoration: none;\
+        }\
+        \
+        li a:hover, .dropdown:hover .dropbtn {\
+          background-color: red;\
+        }\
+        \
+        li.dropdown {\
+          display: inline-block;\
+        }\
+        \
+        .dropdown-content {\
+          display: none;\
+          position: absolute;\
+          background-color: #f9f9f9;\
+          min-width: 160px;\
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\
+          z-index: 1;\
+        }\
+        \
+        .dropdown-content a {\
+          color: black;\
+          padding: 12px 16px;\
+          text-decoration: none;\
+          display: block;\
+          text-align: left;\
+        }\
+        \
+        .dropdown-content a:hover {background-color: #f1f1f1;}\
+        \
+        .dropdown:hover .dropdown-content {\
+          display: block;\
+        }\
       </style>\
-      <h1><b>Wifi Thermometer</b></h1><br/>\
-      <div id='h_nav_bar'>\
-          <a href='/home'>Home</a>\
-          <a href='/setup'>Setup</a>\
-          <a href='/wifi'>Wifi</a>\
-          <a href='/help'>Help!</a>\
-      </div><br/>\
+    ");
+  return header;
+}
+
+String getPageHeader()
+{
+  String header=
+F( "<head>\
+      <div class='Head'>\
+        <div class='Title'>\
+        <h1><b>Wifi Thermometer</b></h1>\
+        </div>\
+        <div class='Menu' id='h_nav_bar'>\
+          <ul style='border-collapse: collapse'>\
+            <li class='dropdown'>\
+              <a href='javascript:void(0)' class='dropbtn' style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
+                <table  style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
+                  <tr>\
+                    <td style='border-collapse: collapse;width: 15px; margin: 0; padding: 0;'>\
+                    </td>\
+                    <td>\
+                      <table style='height: 100px; width: 70px; border-collapse: collapse; margin: 0; padding: 0;'>\
+                      <tr>\
+                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
+                        </td>\
+                      </tr>\
+                      <tr>\
+                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
+                        </td>\
+                      </tr>\
+                      <tr>\
+                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
+                        </td>\
+                      </tr>\
+                      <tr>\
+                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;'>\
+                        </td>\
+                      </tr>\
+                      </table>\
+                    </td>\
+                    <td style='border-collapse: collapse;width: 15px; margin: 0; padding: 0;'>\
+                    </td>\
+                  </tr>\
+                </table>\
+              </a>\
+              <div class='dropdown-content'>\
+                <a href='/home'>Home</a>\
+                <a href='/setup'>Setup</a>\
+                <a href='/wifi'>Wifi</a>\
+                <a href='/help'>Help!</a>\
+              </div>\
+            </li>\
+          </ul>\
+        </div>\
+      </div>\
     </head>\
-    <body>\
-    <br/><br/><br/>\
     ");
   return header;
 }
@@ -126,7 +260,12 @@ void handleWifi() {
   server.sendHeader("Expires", "-1");
 
   String Page;
+  Page += F("<html>");
+  Page += getStyleSheet();
+  Page += F("<div class='grid-container'>");
   Page += getPageHeader();
+  Page += F("<body>");
+  Page += F("<div class='Main'>");
   if (server.client().localIP() == apIP) {
     Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
   } else {
@@ -164,13 +303,14 @@ void handleWifi() {
   } else {
     Page += F("<tr><td'>No WLAN found</td></tr>");
   }
-  Page += F(
-            "</table>"
+  Page += F("</table>"
             "\r\n<br /><form method='POST' action='wifisave'><h4>Connect to network:</h4>"
             "<input type='text' placeholder='network' name='n'/>"
             "<br /><input type='password' placeholder='password' name='p'/>"
-            "<br /><input type='submit' value='Connect/Disconnect'/></form>"
-            "</body></html>");
+            "<br /><input type='submit' value='Connect/Disconnect'/></form>");
+  Page += F("<div>");
+  Page += F("<div>");
+  Page += F("</body></html>");
   server.send(200, "text/html", Page);
   server.client().stop(); // Stop is needed because we sent no content length
 }
@@ -181,8 +321,16 @@ void handleSetup() {
   server.sendHeader("Expires", "-1");
 
   String Page;
+  Page += F("<html>");
+  Page += getStyleSheet();
+  Page += F("<div class='grid-container'>");
   Page += getPageHeader();
+  Page += F("<body>");
+  Page += F("<div class='Main'>");
   Page += String(F("<h1><b>Setup page coming soon...</b></h1>"));
+  Page += F("<div>");
+  Page += F("<div>");
+  Page += F("</body></html>");
   server.send(200, "text/html", Page);
 }
 
@@ -192,8 +340,16 @@ void handleHelp() {
   server.sendHeader("Expires", "-1");
 
   String Page;
+  Page += F("<html>");
+  Page += getStyleSheet();
+  Page += F("<div class='grid-container'>");
   Page += getPageHeader();
+  Page += F("<body>");
+  Page += F("<div class='Main'>");
   Page += String(F("<h1><b>Help page coming soon...</b></h1>"));
+  Page += F("<div>");
+  Page += F("<div>");
+  Page += F("</body></html>");
   server.send(200, "text/html", Page);
 }
 
