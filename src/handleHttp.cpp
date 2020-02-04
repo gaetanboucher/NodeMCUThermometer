@@ -21,7 +21,7 @@ extern const char *myHostname;
 extern boolean connect;
 extern float getProbeTemp(int prodeId);
 
-String getPageHeader();
+String getMenu();
 String getStyleSheet();
 
 /** Handle root or redirect to captive portal */
@@ -32,25 +32,41 @@ void handleRoot() {
   server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server.sendHeader("Pragma", "no-cache");
   server.sendHeader("Expires", "-1");
-
   String Page;
   Page += F("<html>");
+  Page += F("<head>");
   Page += getStyleSheet();
-  Page += F("<div class='grid-container'>");
-  Page += getPageHeader();
+  Page += F("</head>");
   Page += F("<body>");
-  Page += F("<div class='Main'>");
-  Page += String(F("<div class='Probe1'>"));
+  Page += F("<div class='grid-container'>");
+  Page += F("  <div class='Head'>");
+  Page += F("    <div class='Menu'>");
+  Page += getMenu();
+  Page += F("    </div>");
+  Page += F("    <div class='Title'>");
+  Page += F("    <h1><b>Wifi Thermometer</b></h1>");
+  Page += F("    </div>");
+  Page += F("  </div>");
+  Page += F("  <div class='Body'>");
+  Page += F("    <div class='Center'>");
+  Page += F("      <div class='Center-Top'>");
   Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("&deg;C</p>");
-  Page += String(F("</div>"));
-  Page += String(F("<div class='Probe2'>"));
-  Page += String(F("<p>Probe 2: "))+getProbeTemp(2)+F("&deg;C</p>");
-  Page += String(F("</div>"));
-  Page += String(F("</div>"));
-  Page += F("<div class='Foot'>");
-  Page += String(F("</div>"));
+  Page += F("      </div>");
+  Page += F("      <div class='Center-Bottom'>");
+  Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("&deg;C</p>");
+  Page += F("      </div>");
+  Page += F("    </div>");
+  Page += F("    <div class='Left'></div>");
+  Page += F("    <div class='Right'></div>");
+  Page += F("  </div>");
+  Page += F("  <div class='Foot'>");
+  Page += F("    <div class='Battery'><p>100%</p></div>");
+  Page += F("    <div class='Network'><p>NetworkID</p></div>");
+  Page += F("    <div class='Status'></div>");
+  Page += F("  </div>");
+  Page += F("</div>");
 
-  Page += String(F("</div>"));
+
   Page += F("</body>");
   Page += F("</html>");
 
@@ -59,45 +75,73 @@ void handleRoot() {
 
 String getStyleSheet()
 {
+  // https://grid.layoutit.com/?id=2KS4RJk
+  // https://grid.layoutit.com/?id=Qz70gEg
+  // https://grid.layoutit.com/?id=7KaPlza
   String header=
 F(\
-  "<style>\
-      .grid-container {\
-        display: grid;\
-        grid-template-columns: 1fr;\
-        grid-template-rows: 0.5fr 2.1fr 0.4fr;\
-        grid-template-areas: 'Head' 'Main' 'Foot';\
-      }\
-\
-      .Main {\
-        display: grid;\
-        grid-template-columns: 1fr;\
-        grid-template-rows: 1fr 1fr;\
-        grid-template-areas: 'Probe1' 'Probe2';\
-        grid-area: Main;\
-      }\
-\
-      .Probe2 { grid-area: Probe2; }\
-\
-      .Probe1 { grid-area: Probe1; }\
-\
-      .Head {\
-        display: grid;\
-        grid-template-columns: 0.1fr 1.9fr;\
-        grid-template-rows: 1fr;\
-        grid-template-areas: 'Menu Title';\
-        grid-area: Head;\
-      }\
-\
-      .Title { grid-area: Title; }\
-\
-      .Menu { grid-area: Menu; }\
-\
-      .Foot { grid-area: Foot; }\
-\
+"<style>\
+        .grid-container {\
+          display: grid;\
+          grid-template-columns: 1fr;\
+          grid-template-rows: 0.2fr 1.8fr 0.2fr;\
+          grid-template-areas: 'Head' 'Body' 'Foot';\
+        }\
+        \
+        .Head {\
+          display: grid;\
+          grid-template-columns: 0.1fr 1.9fr;\
+          grid-template-rows: 1fr;\
+          grid-template-areas: 'Menu Title';\
+          grid-area: Head;\
+        }\
+        \
+        .Menu { grid-area: Menu; }\
+        \
+        .Title { grid-area: Title; }\
+        \
+        .Body {\
+          display: grid;\
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;\
+          grid-template-rows: 1fr [whatsthis] 1fr;\
+          grid-template-areas: 'Left Center Center Center Right' 'Left Center Center Center Right';\
+          grid-area: Body;\
+        }\
+        \
+        .Center {\
+          display: grid;\
+          grid-template-columns: 1fr 1fr 1fr;\
+          grid-template-rows: 1fr 1fr;\
+          grid-template-areas: 'Center-Top Center-Top Center-Top' 'Center-Bottom Center-Bottom Center-Bottom';\
+          grid-area: Center;\
+        }\
+        \
+        .Center-Top { grid-area: Center-Top; }\
+        \
+        .Center-Bottom { grid-area: Center-Bottom; }\
+        \
+        .Left { grid-area: Left; }\
+        \
+        .Right { grid-area: Right; }\
+        \
+        .Foot {\
+          display: grid;\
+          grid-template-columns: 2.1fr 0.7fr 0.2fr;\
+          grid-template-rows: 1fr;\
+          grid-template-areas: 'Status Network Battery';\
+          grid-area: Foot;\
+        }\
+        \
+        .Battery { grid-area: Battery; }\
+        \
+        .Network { grid-area: Network; }\
+        \
+        .Status { grid-area: Status; }\
+        \
         body {\
           background-color: #141414;\
         }\
+\
         h1, h2, h3 , h4 {\
           color: lemonchiffon;\
           margin-left: 40px;\
@@ -185,13 +229,11 @@ F(\
   return header;
 }
 
-String getPageHeader()
+String getMenu()
 {
   String header=
-F( "<head>\
-      <div class='Head'>\
+F( "<div class='Head'>\
         <div class='Title'>\
-        <h1><b>Wifi Thermometer</b></h1>\
         </div>\
         <div class='Menu' id='h_nav_bar'>\
           <ul style='border-collapse: collapse'>\
@@ -236,7 +278,6 @@ F( "<head>\
           </ul>\
         </div>\
       </div>\
-    </head>\
     ");
   return header;
 }
@@ -263,18 +304,16 @@ void handleWifi() {
   Page += F("<html>");
   Page += getStyleSheet();
   Page += F("<div class='grid-container'>");
-  Page += getPageHeader();
+  Page += getMenu();
   Page += F("<body>");
   Page += F("<div class='Main'>");
   if (server.client().localIP() == apIP) {
     Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
   } else {
-    Page += String(F("<p>You are connected through the wifi network: ")) + ssid + F("</p>");
+    Page += String(F("<p>You are connected through the wifi network: ")) + String(ssid) + F("</p>");
   }
   Page +=
-    String(F(
-             "\r\n<br />"
-             "<table><tr><th align='left'>SoftAP config</th></tr>"
+    String(F("<table><tr><th align='left'>SoftAP config</th></tr>"
              "<tr><td>SSID ")) +
     String(softAP_ssid) +
     F("</td></tr>"
@@ -324,7 +363,7 @@ void handleSetup() {
   Page += F("<html>");
   Page += getStyleSheet();
   Page += F("<div class='grid-container'>");
-  Page += getPageHeader();
+  Page += getMenu();
   Page += F("<body>");
   Page += F("<div class='Main'>");
   Page += String(F("<h1><b>Setup page coming soon...</b></h1>"));
@@ -343,7 +382,7 @@ void handleHelp() {
   Page += F("<html>");
   Page += getStyleSheet();
   Page += F("<div class='grid-container'>");
-  Page += getPageHeader();
+  Page += getMenu();
   Page += F("<body>");
   Page += F("<div class='Main'>");
   Page += String(F("<h1><b>Help page coming soon...</b></h1>"));
