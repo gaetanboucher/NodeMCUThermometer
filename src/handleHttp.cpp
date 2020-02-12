@@ -4,6 +4,9 @@
 #include <ESP8266WebServer.h>
 #include <credentials.h>
 #include <tools.h>
+#include <css/layout.h>
+#include <css/menu.h>
+ADC_MODE(ADC_VCC);
 
 boolean captivePortal();
 
@@ -37,10 +40,9 @@ void handleRoot() {
   Page += F("<head>");
   Page += getStyleSheet();
   Page += F("</head>");
-  Page += F("<body>");
   Page += F("<div class='grid-container'>");
   Page += F("  <div class='Head'>");
-  Page += F("    <div class='Menu'>");
+  Page += F("    <div class='Menu' id='h_nav_bar'>");
   Page += getMenu();
   Page += F("    </div>");
   Page += F("    <div class='Title'>");
@@ -60,14 +62,16 @@ void handleRoot() {
   Page += F("    <div class='Right'></div>");
   Page += F("  </div>");
   Page += F("  <div class='Foot'>");
-  Page += F("    <div class='Battery'><p>100%</p></div>");
+  Page += F("    <div class='Battery'><p>");
+  float batteryLevel = ESP.getVcc()*100.0/65353.0;
+  Page += String(F("      <p>"))+batteryLevel+F("</p>");
+  Page += F("    </div>");
   Page += F("    <div class='Network'><p>NetworkID</p></div>");
   Page += F("    <div class='Status'></div>");
   Page += F("  </div>");
   Page += F("</div>");
 
 
-  Page += F("</body>");
   Page += F("</html>");
 
   server.send(200, "text/html", Page);
@@ -78,206 +82,56 @@ String getStyleSheet()
   // https://grid.layoutit.com/?id=2KS4RJk
   // https://grid.layoutit.com/?id=Qz70gEg
   // https://grid.layoutit.com/?id=7KaPlza
-  String header=
-F(\
-"<style>\
-        .grid-container {\
-          display: grid;\
-          grid-template-columns: 1fr;\
-          grid-template-rows: 0.2fr 1.8fr 0.2fr;\
-          grid-template-areas: 'Head' 'Body' 'Foot';\
-        }\
-        \
-        .Head {\
-          display: grid;\
-          grid-template-columns: 0.1fr 1.9fr;\
-          grid-template-rows: 1fr;\
-          grid-template-areas: 'Menu Title';\
-          grid-area: Head;\
-        }\
-        \
-        .Menu { grid-area: Menu; }\
-        \
-        .Title { grid-area: Title; }\
-        \
-        .Body {\
-          display: grid;\
-          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;\
-          grid-template-rows: 1fr [whatsthis] 1fr;\
-          grid-template-areas: 'Left Center Center Center Right' 'Left Center Center Center Right';\
-          grid-area: Body;\
-        }\
-        \
-        .Center {\
-          display: grid;\
-          grid-template-columns: 1fr 1fr 1fr;\
-          grid-template-rows: 1fr 1fr;\
-          grid-template-areas: 'Center-Top Center-Top Center-Top' 'Center-Bottom Center-Bottom Center-Bottom';\
-          grid-area: Center;\
-        }\
-        \
-        .Center-Top { grid-area: Center-Top; }\
-        \
-        .Center-Bottom { grid-area: Center-Bottom; }\
-        \
-        .Left { grid-area: Left; }\
-        \
-        .Right { grid-area: Right; }\
-        \
-        .Foot {\
-          display: grid;\
-          grid-template-columns: 2.1fr 0.7fr 0.2fr;\
-          grid-template-rows: 1fr;\
-          grid-template-areas: 'Status Network Battery';\
-          grid-area: Foot;\
-        }\
-        \
-        .Battery { grid-area: Battery; }\
-        \
-        .Network { grid-area: Network; }\
-        \
-        .Status { grid-area: Status; }\
-        \
-        body {\
-          background-color: #141414;\
-        }\
-\
-        h1, h2, h3 , h4 {\
-          color: lemonchiffon;\
-          margin-left: 40px;\
-          margin-right: 40px;\
-          font-size:50px;\
-          font-family:Arial;\
-        }\
-        p {\
-          color: lemonchiffon;\
-          margin-left: 40px;\
-          margin-right: 40px;\
-          font-size:30px;\
-          font-family:Arial;\
-        }\
-        th {\
-          color: silver;\
-          margin-left: 40px;\
-          margin-right: 40px;\
-          font-size:30px;\
-          font-family:Arial;\
-        }\
-        td,input {\
-          color: lemonchiffon;\
-          margin-left: 40px;\
-          margin-right: 40px;\
-          font-size:30px;\
-          font-family:Arial;\
-        }\
-        a {\
-          font-size:30px;\
-          font-family:Arial;\
-        }\
-        ul {\
-          list-style-type: none;\
-          margin: 0;\
-          padding: 0;\
-          overflow: hidden;\
-          background-color: red;\
-        }\
-        \
-        li {\
-          float: left;\
-        }\
-        \
-        li a, .dropbtn {\
-          display: inline-block;\
-          color: white;\
-          text-align: center;\
-          padding: 14px 16px;\
-          text-decoration: none;\
-        }\
-        \
-        li a:hover, .dropdown:hover .dropbtn {\
-          background-color: red;\
-        }\
-        \
-        li.dropdown {\
-          display: inline-block;\
-        }\
-        \
-        .dropdown-content {\
-          display: none;\
-          position: absolute;\
-          background-color: #f9f9f9;\
-          min-width: 160px;\
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\
-          z-index: 1;\
-        }\
-        \
-        .dropdown-content a {\
-          color: black;\
-          padding: 12px 16px;\
-          text-decoration: none;\
-          display: block;\
-          text-align: left;\
-        }\
-        \
-        .dropdown-content a:hover {background-color: #f1f1f1;}\
-        \
-        .dropdown:hover .dropdown-content {\
-          display: block;\
-        }\
-      </style>\
-    ");
+  String header="<style>";
+  header.concat( layout );
+  header.concat( menu );
+  header.concat( "</style>" );
   return header;
 }
 
 String getMenu()
 {
   String header=
-F( "<div class='Head'>\
-        <div class='Title'>\
-        </div>\
-        <div class='Menu' id='h_nav_bar'>\
-          <ul style='border-collapse: collapse'>\
-            <li class='dropdown'>\
-              <a href='javascript:void(0)' class='dropbtn' style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
-                <table  style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
-                  <tr>\
-                    <td style='border-collapse: collapse;width: 15px; margin: 0; padding: 0;'>\
-                    </td>\
-                    <td>\
-                      <table style='height: 100px; width: 70px; border-collapse: collapse; margin: 0; padding: 0;'>\
-                      <tr>\
-                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
-                        </td>\
-                      </tr>\
-                      <tr>\
-                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
-                        </td>\
-                      </tr>\
-                      <tr>\
-                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
-                        </td>\
-                      </tr>\
-                      <tr>\
-                        <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;'>\
-                        </td>\
-                      </tr>\
-                      </table>\
-                    </td>\
-                    <td style='border-collapse: collapse;width: 15px; margin: 0; padding: 0;'>\
-                    </td>\
-                  </tr>\
+F( "<ul style='border-collapse: collapse'>\
+      <li class='dropdown'>\
+        <a href='javascript:void(0)' class='dropbtn' style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
+          <table  style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
+            <tr>\
+              <td style='border-collapse: collapse;width: 15px; margin: 0; padding: 0;'>\
+              </td>\
+              <td>\
+                <table style='height: 100px; width: 70px; border-collapse: collapse; margin: 0; padding: 0;'>\
+                <tr>\
+                  <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
+                  </td>\
+                </tr>\
+                <tr>\
+                  <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
+                  </td>\
+                </tr>\
+                <tr>\
+                  <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;border-bottom: 2px solid white;'>\
+                  </td>\
+                </tr>\
+                <tr>\
+                  <td style='border-collapse: collapse;width: 80px; margin: 0; padding: 0;'>\
+                  </td>\
+                </tr>\
                 </table>\
-              </a>\
-              <div class='dropdown-content'>\
-                <a href='/home'>Home</a>\
-                <a href='/setup'>Setup</a>\
-                <a href='/wifi'>Wifi</a>\
-                <a href='/help'>Help!</a>\
-              </div>\
-            </li>\
-          </ul>\
+              </td>\
+              <td style='border-collapse: collapse;width: 15px; margin: 0; padding: 0;'>\
+              </td>\
+            </tr>\
+          </table>\
+        </a>\
+        <div class='dropdown-content'>\
+          <a href='/home'>Home</a>\
+          <a href='/setup'>Setup</a>\
+          <a href='/wifi'>Wifi</a>\
+          <a href='/help'>Help!</a>\
         </div>\
-      </div>\
+      </li>\
+    </ul>\
     ");
   return header;
 }
