@@ -1,15 +1,5 @@
 html, body, .grid-container { height: 100%; margin: 0; }
 
-.grid-container * { 
- position: relative;
-}
-
-.grid-container *:after { 
- position: absolute;
- top: 0;
- left: 0;
-}
-
 .grid-container {
   display: grid;
   grid-template-columns: 1fr;
