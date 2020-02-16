@@ -28,6 +28,9 @@ html, body, .grid-container { height: 100%; margin: 0; }
 }
 
 .Center {
+  text-align: center;  
+  font-family: "Arial Black";
+  font-size: 60px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;

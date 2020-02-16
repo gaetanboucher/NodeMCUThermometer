@@ -52,10 +52,10 @@ void handleRoot() {
   Page += F("  <div class='Body'>");
   Page += F("    <div class='Center'>");
   Page += F("      <div class='Center-Top'>");
-  Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("&deg;C</p>");
+  Page += String(F("<p>"))+getProbeTemp(1)+F("&deg;C</p>");
   Page += F("      </div>");
   Page += F("      <div class='Center-Bottom'>");
-  Page += String(F("<p>Probe 1: "))+getProbeTemp(1)+F("&deg;C</p>");
+  Page += String(F("<p>"))+getProbeTemp(1)+F("&deg;C</p>");
   Page += F("      </div>");
   Page += F("    </div>");
   Page += F("    <div class='Left'></div>");

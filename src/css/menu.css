@@ -12,10 +12,6 @@ h1, h2, h3 , h4 {
   }
   p {
     color: lemonchiffon;
-    margin-left: 40px;
-    margin-right: 40px;
-    font-size:30px;
-    font-family:Arial;
   }
   th {
     color: silver;
