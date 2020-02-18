@@ -265,40 +265,14 @@ void handleWifi() {
 }
 
 void handleSetup() {
-  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-
-  std::string Page;
-  Page += "<html>";
-  Page += getStyleSheet();
-  Page += "<div class='grid-container'>";
-  Page += getMenu();
-  Page += "<body>";
-  Page += "<div class='Main'>";
-  Page += "<h1><b>Setup page coming soon...</b></h1>";
-  Page += "<div>";
-  Page += "<div>";
-  Page += "</body></html>";
+  std::string Page = getPage();
+  Page.replace(Page.find("*Center*"),strlen("*Center*"), "<h1><b>Setup page coming soon...</b></h1>");
   server.send(200, "text/html", Page.c_str());
 }
 
 void handleHelp() {
-  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-
-  std::string Page;
-  Page += "<html>";
-  Page += getStyleSheet();
-  Page += "<div class='grid-container'>";
-  Page += getMenu();
-  Page += "<body>";
-  Page += "<div class='Main'>";
-  Page += "<h1><b>Help page coming soon...</b></h1>";
-  Page += "<div>";
-  Page += "<div>";
-  Page += "</body></html>";
+  std::string Page = getPage();
+  Page.replace(Page.find("*Center*"),strlen("*Center*"), "<h1><b>Help page coming soon...</b></h1>");
   server.send(200, "text/html", Page.c_str());
 }
 
