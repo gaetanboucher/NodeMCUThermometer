@@ -24,75 +24,96 @@ extern const char *myHostname;
 extern boolean connect;
 extern float getProbeTemp(int prodeId);
 
-String getMenu();
-String getStyleSheet();
+std::string getMenu();
+std::string getStyleSheet();
+std::string getPage();
 
 /** Handle root or redirect to captive portal */
 void handleRoot() {
   if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
     return;
   }
+  std::string page = getPage();
+  std::string probes;
+  probes += "      <div class='Center-Top'>";
+  probes += "        <p>";
+  probes +=            String(getProbeTemp(0)).c_str();
+  probes += "          &deg;C";
+  probes += "        </p>";
+  probes += "      </div>";
+  probes += "      <div class='Center-Bottom'>";
+  probes += "        <p>";
+  probes +=            String(getProbeTemp(1)).c_str();
+  probes += "          &deg;C";
+  probes += "        </p>";
+  probes += "      </div>";
+  
+  page.replace(page.find("*Center*"),strlen("*Center*"), probes);
+
+  server.send(200, "text/html", page.c_str());
+}
+
+std::string getPage() {
   server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server.sendHeader("Pragma", "no-cache");
   server.sendHeader("Expires", "-1");
-  String Page;
-  Page += F("<html>");
-  Page += F("<head>");
+  std::string Page;
+  Page += "<html>";
+  Page += "<head>";
   Page += getStyleSheet();
-  Page += F("</head>");
-  Page += F("<div class='grid-container'>");
-  Page += F("  <div class='Head'>");
-  Page += F("    <div class='Menu' id='h_nav_bar'>");
+  Page += "</head>";
+  Page += "<div class='grid-container'>";
+  Page += "  <div class='Head'>";
+  Page += "    <div class='Menu' id='h_nav_bar'>";
   Page += getMenu();
-  Page += F("    </div>");
-  Page += F("    <div class='Title'>");
-  Page += F("    <h1><b>Wifi Thermometer</b></h1>");
-  Page += F("    </div>");
-  Page += F("  </div>");
-  Page += F("  <div class='Body'>");
-  Page += F("    <div class='Center'>");
-  Page += F("      <div class='Center-Top'>");
-  Page += String(F("<p>"))+getProbeTemp(1)+F("&deg;C</p>");
-  Page += F("      </div>");
-  Page += F("      <div class='Center-Bottom'>");
-  Page += String(F("<p>"))+getProbeTemp(1)+F("&deg;C</p>");
-  Page += F("      </div>");
-  Page += F("    </div>");
-  Page += F("    <div class='Left'></div>");
-  Page += F("    <div class='Right'></div>");
-  Page += F("  </div>");
-  Page += F("  <div class='Foot'>");
-  Page += F("    <div class='Battery'><p>");
+  Page += "    </div>";
+  Page += "    <div class='Title'>";
+  Page += "    <h1><b>Wifi Thermometer</b></h1>";
+  Page += "    </div>";
+  Page += "  </div>";
+  Page += "  <div class='Body'>";
+  Page += "    <div class='Center'>";
+  Page += "*Center*";
+  Page += "    </div>";
+  Page += "    <div class='Left'></div>";
+  Page += "    <div class='Right'></div>";
+  Page += "  </div>";
+  Page += "  <div class='Foot'>";
+  Page += "    <div class='Battery'>";
+  Page +=        "<p>";
   float batteryLevel = ESP.getVcc()*100.0/65353.0;
-  Page += String(F("      <p>"))+batteryLevel+F("</p>");
-  Page += F("    </div>");
-  Page += F("    <div class='Network'><p>NetworkID</p></div>");
-  Page += F("    <div class='Status'></div>");
-  Page += F("  </div>");
-  Page += F("</div>");
+  Page +=           String(batteryLevel).c_str();
+  Page +=        "</p>";
+  Page += "    </div>";
+  Page += "    <div class='Network'>";
+  Page += "      <p>";
+  Page += WiFi.SSID().c_str();
+  Page += "      </p>";
+  Page += "    </div>";
+  Page += "    <div class='Status'></div>";
+  Page += "  </div>";
+  Page += "</div>";
+  Page += "</html>";
 
-
-  Page += F("</html>");
-
-  server.send(200, "text/html", Page);
+  return Page;
 }
 
-String getStyleSheet()
+std::string getStyleSheet()
 {
   // https://grid.layoutit.com/?id=2KS4RJk
   // https://grid.layoutit.com/?id=Qz70gEg
   // https://grid.layoutit.com/?id=7KaPlza
-  String header="<style>";
-  header.concat( layout );
-  header.concat( menu );
-  header.concat( "</style>" );
+  std::string header="<style>";
+  header  += layout;
+  header  += menu;
+  header  +=  "</style>";
   return header;
 }
 
-String getMenu()
+std::string getMenu()
 {
-  String header=
-F( "<ul style='border-collapse: collapse'>\
+  std::string header=
+ "<ul style='border-collapse: collapse'>\
       <li class='dropdown'>\
         <a href='javascript:void(0)' class='dropbtn' style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
           <table  style='border-collapse: collapse;height: 100px; width: 100px; margin: 0; padding: 0;'>\
@@ -132,7 +153,7 @@ F( "<ul style='border-collapse: collapse'>\
         </div>\
       </li>\
     </ul>\
-    ");
+    ";
   return header;
 }
 
@@ -154,57 +175,92 @@ void handleWifi() {
   server.sendHeader("Pragma", "no-cache");
   server.sendHeader("Expires", "-1");
 
-  String Page;
-  Page += F("<html>");
+  std::string Page;
+  Page += "<html>";
+  Page += "<head>";
   Page += getStyleSheet();
-  Page += F("<div class='grid-container'>");
+  Page += "</head>";
+  Page += "<div class='grid-container'>";
+  Page += "  <div class='Head'>";
+  Page += "    <div class='Menu' id='h_nav_bar'>";
   Page += getMenu();
-  Page += F("<body>");
-  Page += F("<div class='Main'>");
+  Page += "    </div>";
+  Page += "    <div class='Title'>";
+  Page += "    <h1><b>Wifi Thermometer</b></h1>";
+  Page += "    </div>";
+  Page += "  </div>";
+  Page += "  <div class='Body'>";
+  Page += "    <div class='Center'>";
   if (server.client().localIP() == apIP) {
-    Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
+    Page += "<p>You are connected through the soft AP: ";
+    Page += softAP_ssid;
+    Page += "</p>";
   } else {
-    Page += String(F("<p>You are connected through the wifi network: ")) + String(ssid) + F("</p>");
+    Page += "<p>You are connected through the wifi network: ";
+    Page += WiFi.SSID().c_str();
+    Page += "</p>";
   }
-  Page +=
-    String(F("<table><tr><th align='left'>SoftAP config</th></tr>"
-             "<tr><td>SSID ")) +
-    String(softAP_ssid) +
-    F("</td></tr>"
-      "<tr><td>IP ") +
-    toStringIp(WiFi.softAPIP()) +
-    F("</td></tr>"
-      "</table>"
-      "\r\n<br />"
-      "<table><tr><th align='left'>WLAN config</th></tr>"
-      "<tr><td>SSID ") +
-    String(ssid) +
-    F("</td></tr>"
-      "<tr><td>IP ") +
-    toStringIp(WiFi.localIP()) +
-    F("</td></tr>"
-      "</table>"
-      "\r\n<br />"
-      "<table><tr><th align='left'>WLAN list (refresh if any missing)</th></tr>");
+  Page += "<table><tr><th align='left'>SoftAP config</th></tr>";
+  Page +=     "<tr><td>SSID ";
+  Page += WiFi.softAPSSID().c_str();
+  Page +=   "</td></tr>";
+  Page +=   "<tr><td>IP ";
+  Page += toStringIp(WiFi.softAPIP()).c_str();
+  Page +=  "</td></tr>";
+  Page +=  "</table>";
+  Page +=  "<br />";
+  Page +=  "<table><tr><th align='left'>WLAN config</th></tr>";
+  Page +=  "<tr><td>SSID ";
+  Page +=  WiFi.SSID().c_str();
+  Page +=  "</td></tr>";
+  Page +=  "<tr><td>IP ";
+  Page +=  toStringIp(WiFi.localIP()).c_str();
+  Page +=  "</td></tr>";
+  Page +=  "</table>";
+  Page +=  "<br />";
+  Page +=  "<table><tr><th align='left'>WLAN list (refresh if any missing)</th></tr>";
   Serial.println("scan start");
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
   if (n > 0) {
     for (int i = 0; i < n; i++) {
-      Page += String(F("\r\n<tr><td>SSID ")) + WiFi.SSID(i) + ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? F(" ") : F(" *")) + F(" (") + WiFi.RSSI(i) + F(")</td></tr>");
+      Page += "<tr><td>SSID ";
+      Page += WiFi.SSID(i).c_str();
+      Page += ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : " *"); 
+      Page += " ("; 
+      Page += String(WiFi.RSSI(i)).c_str();
+      Page += ")</td></tr>";
+      Page += "<tr><td>SSID ";
+      Page += WiFi.SSID(i).c_str();
+      Page += ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : " *");
+      Page += " (";
+      Page += String(WiFi.RSSI(i)).c_str();
+      Page += ")</td></tr>";
     }
   } else {
-    Page += F("<tr><td'>No WLAN found</td></tr>");
+    Page += "<tr><td'>No WLAN found</td></tr>";
   }
-  Page += F("</table>"
-            "\r\n<br /><form method='POST' action='wifisave'><h4>Connect to network:</h4>"
-            "<input type='text' placeholder='network' name='n'/>"
-            "<br /><input type='password' placeholder='password' name='p'/>"
-            "<br /><input type='submit' value='Connect/Disconnect'/></form>");
-  Page += F("<div>");
-  Page += F("<div>");
-  Page += F("</body></html>");
-  server.send(200, "text/html", Page);
+  Page += "</table>";
+  Page +=   "\r\n<br /><form method='POST' action='wifisave'><h4>Connect to network:</h4>";
+  Page +=   "<input type='text' placeholder='network' name='n'/>";
+  Page +=   "<br /><input type='password' placeholder='password' name='p'/>";
+  Page +=   "<br /><input type='submit' value='Connect/Disconnect'/></form>";
+  Page += "<div>";
+  Page += "    <div class='Left'></div>";
+  Page += "    <div class='Right'></div>";
+  Page += "  </div>";
+  Page += "  <div class='Foot'>";
+  Page += "    <div class='Battery'><p>";
+  float batteryLevel = ESP.getVcc()*100.0/65353.0;
+  Page += "      <p>";
+  Page += batteryLevel;
+  Page += "</p>";
+  Page += "    </div>";
+  Page += "    <div class='Network'><p>NetworkID</p></div>";
+  Page += "    <div class='Status'></div>";
+  Page += "  </div>";
+  Page += "</div>";
+  server.send(200, "text/html", Page.c_str());
   server.client().stop(); // Stop is needed because we sent no content length
 }
 
@@ -213,18 +269,18 @@ void handleSetup() {
   server.sendHeader("Pragma", "no-cache");
   server.sendHeader("Expires", "-1");
 
-  String Page;
-  Page += F("<html>");
+  std::string Page;
+  Page += "<html>";
   Page += getStyleSheet();
-  Page += F("<div class='grid-container'>");
+  Page += "<div class='grid-container'>";
   Page += getMenu();
-  Page += F("<body>");
-  Page += F("<div class='Main'>");
-  Page += String(F("<h1><b>Setup page coming soon...</b></h1>"));
-  Page += F("<div>");
-  Page += F("<div>");
-  Page += F("</body></html>");
-  server.send(200, "text/html", Page);
+  Page += "<body>";
+  Page += "<div class='Main'>";
+  Page += "<h1><b>Setup page coming soon...</b></h1>";
+  Page += "<div>";
+  Page += "<div>";
+  Page += "</body></html>";
+  server.send(200, "text/html", Page.c_str());
 }
 
 void handleHelp() {
@@ -232,18 +288,18 @@ void handleHelp() {
   server.sendHeader("Pragma", "no-cache");
   server.sendHeader("Expires", "-1");
 
-  String Page;
-  Page += F("<html>");
+  std::string Page;
+  Page += "<html>";
   Page += getStyleSheet();
-  Page += F("<div class='grid-container'>");
+  Page += "<div class='grid-container'>";
   Page += getMenu();
-  Page += F("<body>");
-  Page += F("<div class='Main'>");
-  Page += String(F("<h1><b>Help page coming soon...</b></h1>"));
-  Page += F("<div>");
-  Page += F("<div>");
-  Page += F("</body></html>");
-  server.send(200, "text/html", Page);
+  Page += "<body>";
+  Page += "<div class='Main'>";
+  Page += "<h1><b>Help page coming soon...</b></h1>";
+  Page += "<div>";
+  Page += "<div>";
+  Page += "</body></html>";
+  server.send(200, "text/html", Page.c_str());
 }
 
 /** Handle the WLAN save form and redirect to WLAN config page again */
@@ -265,21 +321,25 @@ void handleNotFound() {
   if (captivePortal()) { // If caprive portal redirect instead of displaying the error page.
     return;
   }
-  String message = F("File Not Found\n\n");
-  message += F("URI: ");
-  message += server.uri();
-  message += F("\nMethod: ");
+  std::string message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri().c_str();
+  message += "\nMethod: ";
   message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += F("\nArguments: ");
+  message += "\nArguments: ";
   message += server.args();
-  message += F("\n");
+  message += "\n";
 
   for (uint8_t i = 0; i < server.args(); i++) {
-    message += String(F(" ")) + server.argName(i) + F(": ") + server.arg(i) + F("\n");
+    message += " ";
+    message += server.argName(i).c_str();
+    message += ": ";
+    message += server.arg(i).c_str();
+    message += "\n";
   }
   server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server.sendHeader("Pragma", "no-cache");
   server.sendHeader("Expires", "-1");
-  server.send(404, "text/plain", message);
+  server.send(404, "text/plain", message.c_str());
 }
 
