@@ -28,9 +28,6 @@ html, body, .grid-container { height: 100%; margin: 0; }
 }
 
 .Center {
-  text-align: center;  
-  font-family: "Arial Black";
-  font-size: 60px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;
@@ -59,3 +56,17 @@ html, body, .grid-container { height: 100%; margin: 0; }
 .Network { grid-area: Network; }
 
 .Status { grid-area: Status; }
+
+p.probe {
+  text-align: center;  
+  font-family: "Arial Black";
+  font-size: 85px;
+  font-weight: 900;
+}
+
+p.foot {
+  text-align: left;  
+  font-family: "Arial";
+  font-size: 30px;
+  font-weight: 300;
+}
