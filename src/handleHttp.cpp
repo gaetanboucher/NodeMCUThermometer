@@ -6,6 +6,9 @@
 #include <tools.h>
 #include <css/layout.h>
 #include <css/menu.h>
+#include <css/border.h>
+#include <js/getProbesScript.h>
+#include <js/refresh.h>
 ADC_MODE(ADC_VCC);
 
 boolean captivePortal();
@@ -29,6 +32,7 @@ std::string getStyleSheet();
 std::string getPage();
 std::string getProbes();
 std::string getWifi();
+std::string getPageScripts();
 
 /** Handle root or redirect to captive portal */
 void handleRoot() {
@@ -37,7 +41,7 @@ void handleRoot() {
   }
   std::string page = getPage();
   std::string probes = getProbes();
-  
+  server.sendHeader("refresh", "5; url=/home");  
   page.replace(page.find("*Center*"),strlen("*Center*"), probes);
 
   server.send(200, "text/html", page.c_str());
@@ -46,16 +50,28 @@ void handleRoot() {
 std::string getProbes() {
   std::string probes;
   probes  = "      <div class='Center-Top'>";
-  probes += "        <p class='probe'>";
-  probes +=            String(getProbeTemp(0)).c_str();
-  probes += "          &deg;C";
-  probes += "        </p>";
-  probes += "      </div>";
-  probes += "      <div class='Center-Bottom'>";
-  probes += "        <p class='probe'>";
+  probes += "        <table class='probe_table'>";
+  probes += "        <tr>";
+  probes += "        <td onclick='getProbe(\"probe1\")'>";
+  probes += "        <p id='probe1' class='probe'>";
   probes +=            String(getProbeTemp(1)).c_str();
   probes += "          &deg;C";
   probes += "        </p>";
+  probes += "        </td>";
+  probes += "        </tr>";
+  probes += "        </table>";
+  probes += "      </div>";
+  probes += "      <div class='Center-Bottom'>";
+  probes += "        <table class='probe_table'>";
+  probes += "        <tr>";
+  probes += "        <td onclick='getProbe(\"probe2\")'>";
+  probes += "        <p id='probe2' class='probe'>";
+  probes +=            String(getProbeTemp(2)).c_str();
+  probes += "          &deg;C";
+  probes += "        </p>";
+  probes += "        </td>";
+  probes += "        </tr>";
+  probes += "        </table>";
   probes += "      </div>";
   return probes;  
 }
@@ -68,7 +84,11 @@ std::string getPage() {
   Page += "<html>";
   Page += "<head>";
   Page += getStyleSheet();
+  Page += "<script>";
+  Page += getPageScripts();
+  Page += "</script>";
   Page += "</head>";
+  Page += "<body onload='myFunction()'>";
   Page += "<div class='grid-container'>";
   Page += "  <div class='Head'>";
   Page += "    <div class='Menu' id='h_nav_bar'>";
@@ -100,6 +120,7 @@ std::string getPage() {
   Page += "    <div class='Status'></div>";
   Page += "  </div>";
   Page += "</div>";
+  Page += "</body>";
   Page += "</html>";
 
   return Page;
@@ -113,7 +134,17 @@ std::string getStyleSheet()
   std::string header="<style>";
   header  += layout;
   header  += menu;
+  header  += border;
   header  +=  "</style>";
+  return header;
+}
+
+std::string getPageScripts()
+{
+  std::string header;
+  header += getProbesScript;
+  header += refresh;
+  Serial.println("Getting page scripts.");
   return header;
 }
 
@@ -214,9 +245,9 @@ std::string getWifi() {
   Page +=  "<tr><td>SSID</td><td>";
   Page +=  WiFi.SSID().c_str();
   Page +=  "</td></tr>";
-  Page +=  "<tr><td>IP</td><td>";
+  Page +=  "<tr><td>IP</td><td><a href='/stopap'>";
   Page +=  toStringIp(WiFi.localIP()).c_str();
-  Page +=  "</td></tr>";
+  Page +=  "</a></td></tr>";
   Page +=  "";
   Page +=  "<tr><td align='left'>WLAN list</td>";
   Serial.println("scan start");
@@ -225,7 +256,7 @@ std::string getWifi() {
   Page += "<td>";
   if (n > 0) {
     for (int i = 0; i < n; i++) {
-      Page += ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "&#128274;"); 
+      Page += ((WiFi.encryptionType(i) != ENC_TYPE_NONE) ? "&#128274;":""); 
       Page += WiFi.SSID(i).c_str();
       Page += " ("; 
       Page += String(WiFi.RSSI(i)).c_str();
@@ -258,6 +289,19 @@ void handleHelp() {
   std::string Page = getPage();
   Page.replace(Page.find("*Center*"),strlen("*Center*"), "<h1><b>Help page coming soon...</b></h1>");
   server.send(200, "text/html", Page.c_str());
+}
+
+void handleStopAp() {
+  std::string Page = getPage();
+  server.sendHeader("Location", "/home", true);
+  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+  server.sendHeader("refresh", "5; url=/home");
+  Page.replace(Page.find("*Center*"),strlen("*Center*"), "<h1><b>Turning AP off ...</b></h1>");
+  server.send(200, "text/html", Page.c_str());
+  delay(1000);
+  WiFi.softAPdisconnect(true); // Turn off AP so we can use modem sleep
 }
 
 /** Handle the WLAN save form and redirect to WLAN config page again */
@@ -301,3 +345,23 @@ void handleNotFound() {
   server.send(404, "text/plain", message.c_str());
 }
 
+void ajaxGetProbeValues()
+{
+  Serial.println("Getting probe values!");
+  std::string Page = "AjaxValue!";
+  server.send(200, "text/html", Page.c_str());
+}
+
+void ajaxRefresh()
+{
+  float batteryLevel = ESP.getVcc()*100.0/65353.0;
+  Serial.println("Refreshing");
+  std::string Page  = String(getProbeTemp(1)).c_str();
+  Page += ";";
+  Page += String(getProbeTemp(2)).c_str();
+  Page += ";";
+  Page +=  String(batteryLevel).c_str();
+  Page += ";";
+  server.send(200, "text/html", Page.c_str());
+  Serial.println(Page.c_str);
+}

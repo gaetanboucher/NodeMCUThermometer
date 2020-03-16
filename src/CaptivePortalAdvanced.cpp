@@ -78,7 +78,11 @@ void setupPortal() {
   server.on("/wifi", handleWifi);
   server.on("/setup", handleSetup);
   server.on("/help", handleHelp);
+  server.on("/refresh", ajaxRefresh);
+  server.on("/getprobe1values", ajaxGetProbeValues);
+  server.on("/getprobe2values", ajaxGetProbeValues);
   server.on("/wifisave", handleWifiSave);
+  server.on("/stopap", handleStopAp);
   server.on("/generate_204", handleRoot);  //Android captive portal. Maybe not needed. Might be handled by notFound handler.
   server.on("/fwlink", handleRoot);  //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
   server.onNotFound(handleNotFound);

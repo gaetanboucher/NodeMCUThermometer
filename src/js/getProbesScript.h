@@ -1,0 +1,1 @@
+const char  *getProbesScript = "function getProbe(e){var t=new XMLHttpRequest;t.onreadystatechange=function(){4==this.readyState&&200==this.status&&(document.getElementById(e).innerHTML=this.responseText)},t.open('GET','get'+e+'values',!0),t.send()}";

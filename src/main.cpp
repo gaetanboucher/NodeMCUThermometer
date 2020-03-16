@@ -21,23 +21,24 @@ int totalSamples = 0;
 int samples = 0;
 
 void loop() { 
-  int pin1, pin2;
-  pin1 = adc.read(1);
-  pin2 = adc.read(2);
-  // Serial.print("Pin1: "); 
-  // Serial.print(pin1,DEC); 
-  // Serial.print(", Temp="); 
-  probe1 = getProbeTemp(pin1);
-  // Serial.print(probe1); 
-  // Serial.print(", Pin2: "); 
-  // Serial.print(pin2,DEC); 
-  // Serial.print(", Temp="); 
-  probe2 = getTemp(pin2);
-  // Serial.print(probe2); 
-  // Serial.println(); 
-  samples++;
-  totalSamples += pin1;
+  // int pin1, pin2;
+  // pin1 = adc.read(1);
+  //  Serial.print("Pin1: "); 
+  //  Serial.print(pin1,DEC); 
+  //  Serial.print(", Temp="); 
+  // probe1 = getProbeTemp(1);
+  //  Serial.print(probe1); 
+  // pin2 = adc.read(2);
+  //  Serial.print(", Pin2: "); 
+  //  Serial.print(pin2,DEC); 
+  //  Serial.print(", Temp="); 
+  // probe2 = getProbeTemp(2);
+  //  Serial.print(probe2); 
+  //  Serial.println(); 
+  // samples++;
+  // totalSamples += pin1;
   loopPortal();
+  delay(1000);
 } 
 
 float getProbeTemp(int probeId) { 

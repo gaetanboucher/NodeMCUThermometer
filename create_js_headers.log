@@ -1,0 +1,12 @@
+Processing path: .\src\js\*.min.js
+File list:.\src\js\getProbesScript.min.js.\src\js\refresh.min.js
+Processing file: .\src\js\getProbesScript.min.js
+Remove \: getProbesScript.min.js
+Removing extensions: getProbesScript
+Processing file: getProbesScript.h
+Closed file: .\src\js/getProbesScript.h
+Processing file: .\src\js\refresh.min.js
+Remove \: refresh.min.js
+Removing extensions: refresh
+Processing file: refresh.h
+Closed file: .\src\js/refresh.h

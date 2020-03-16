@@ -57,6 +57,10 @@ html, body, .grid-container { height: 100%; margin: 0; }
 
 .Status { grid-area: Status; }
 
+td.probe:hover {
+  background-color: darkslategrey;
+}
+
 p.probe {
   text-align: center;  
   font-family: "Arial Black";
