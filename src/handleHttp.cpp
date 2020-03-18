@@ -41,7 +41,7 @@ void handleRoot() {
   }
   std::string page = getPage();
   std::string probes = getProbes();
-  server.sendHeader("refresh", "5; url=/home");  
+  //server.sendHeader("refresh", "5; url=/home");  
   page.replace(page.find("*Center*"),strlen("*Center*"), probes);
 
   server.send(200, "text/html", page.c_str());
@@ -143,7 +143,9 @@ std::string getPageScripts()
 {
   std::string header;
   header += getProbesScript;
+  header += ";\n";
   header += refresh;
+  header += ";\n";
   Serial.println("Getting page scripts.");
   return header;
 }
@@ -363,5 +365,5 @@ void ajaxRefresh()
   Page +=  String(batteryLevel).c_str();
   Page += ";";
   server.send(200, "text/html", Page.c_str());
-  Serial.println(Page.c_str);
+  Serial.println((char*)Page.c_str());
 }
